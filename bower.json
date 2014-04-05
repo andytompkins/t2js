@@ -1,0 +1,11 @@
+{
+  "name": "js-fft-engine",
+  "version": "0.0.1-001",
+  "dependencies": {
+    "jquery": "latest",
+	"howler": "latest",
+	"tweenjs": "latest"
+  },
+  "devDependencies": {
+  }
+}
