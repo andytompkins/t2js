@@ -11,6 +11,13 @@ APP.main = function() {
 	document.body.appendChild(renderer.domElement);
 
 
+	var cssScene = new THREE.Scene();
+	var cssRenderer = new THREE.CSS3DRenderer();
+	cssRenderer.setSize(window.innerWidth, window.innerHeight);
+	cssRenderer.domElement.style.position = 'absolute';
+	cssRenderer.domElement.style.top = 0;
+	document.body.appendChild(cssRenderer.domElement);
+
 //var sound = new Howl({
 //	urls: ['assets/music/24.ogg']
 //}).play();
@@ -64,7 +71,7 @@ APP.main = function() {
 		}
 	}
 
-	camera.position.set(2, 2, 5);
+	camera.position.set(0, 0, 40);
 	//camera.position.z = 5;
 	var controls = new THREE.OrbitControls(camera);
 	controls.addEventListener('change', render);
@@ -85,30 +92,21 @@ APP.main = function() {
 		console.log("it tested");
 		var lw = gui.loginWindow();
 		lw.position.set(0, 0, 0);
-		lw.scale.set(1, 1, 1);
+		lw.scale.set(0.001, 0.001, 1);
 		console.log(lw);
-		//console.log(lw.scale);
-		//lw.scale.set(1000, 1000, 1000);
-		//= new THREE.Vector3(10, 10, 10);
-		scene.add(lw);
-		camera.lookAt(lw);
+		//scene.add(lw);
+		//camera.lookAt(lw);
+		var sx = { x: 0.001, y: 0.001 };
+		var sxt = { x: 1, y: 1 };
+		var tween = new TWEEN.Tween(sx).to(sxt, 200);
+		tween.easing(TWEEN.Easing.Linear.None);
+		tween.onUpdate(function() {
+			lw.scale.x = sx.x;
+			lw.scale.y = sx.y;
+		});
+		tween.start();
 
-		var s = new THREE.Shape();
-		s.moveTo(0,0);
-		s.lineTo(0,2);
-		s.lineTo(2,2);
-		s.lineTo(2,0);
-		s.lineTo(0,0);
-		var rg = new THREE.ShapeGeometry(s);
 
-		var g2 = new THREE.PlaneGeometry(2, 2);
-		var t = new THREE.ImageUtils.loadTexture('assets/textures/gui/default/dialog/0.png');
-		t.magFilter = THREE.NearestFilter;
-		t.minFilter = THREE.NearestFilter;
-		t.needsUpdate = true;
-		var m = new THREE.MeshBasicMaterial({transparent: true, map: t});
-		var m2 = new THREE.Mesh(rg, m);
-		scene.add(m2);
 	}
 
 	function render() {
@@ -119,10 +117,13 @@ APP.main = function() {
 
 		renderer.autoClear = false;
 		renderer.clear();
-		for (var i = 1, upper = scenes.length; i < upper; i++) {
+		for (var i = 0, upper = scenes.length; i < upper; i++) {
 			renderer.render(scenes[i].scene, scenes[i].camera);
 		}
 		//renderer.render(scene, camera);
+		cssRenderer.render(cssScene, camera);
+
+		TWEEN.update();
 	}
 	render();
 };

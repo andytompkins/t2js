@@ -1,6 +1,6 @@
 APP.WindowNodeDrawer = function(width, height, style, title) {
-	var v = 1.0/120.0;
-	//var v = 1;
+	//var v = 1.0/120.0;
+	var v = 1;
 	var scale = 2*12.0/240.0;
 
 	// font!?
@@ -25,30 +25,32 @@ APP.WindowNodeDrawer = function(width, height, style, title) {
 	var order = [ 4, 0, 1, 2, 3, 5, 6, 7, 8 ];
 
 	for (var i = 0, upper = order.length; i < upper; i++) {
-		if (i==0) continue;
 		var index = order[i];
 
-		var cm = new THREE.CardMaker('card' + index);
-		cm.setFrameByVector4(frames[index]);
+		var gw = frames[index].y - frames[index].x; // r - l
+		var gh = frames[index].w - frames[index].z; // t - b
+		console.log("gw="+gw+" gh="+gh);
 
-		var geom = cm.gen2();
-		console.log(geom);
+		var mx = frames[index].x + gw/2;
+		var mz = 0;
+		var my = frames[index].z + gh/2;
+		console.log("mx="+mx+" my="+my+" mz="+mz);
 
-		var texture = new THREE.ImageUtils.loadTexture('assets/textures/gui/default/' + style + '/' + index + '.png');
-		texture.premultiplyAlpha = true;
-		texture.magFilter = THREE.NearestFilter;
-		texture.minFilter = THREE.NearestFilter;
-		//if (index == 4) {
-		//	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-		//}
 
-		texture.needsUpdate = true;
-
+		var geometry = null;
+		var texture = null;
 		var material = null;
 		var mesh = null;
 
 		if (index == 4) {
+
+			geometry = new THREE.PlaneGeometry(gw, gh);
+			texture = new THREE.ImageUtils.loadTexture('assets/textures/gui/default/' + style + '/' + index + '.png');
+			texture.magFilter = THREE.NearestFilter;
+			texture.minFilter = THREE.NearestFilter;
 			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.x = gw;
+			texture.repeat.y = gh;
 			texture.needsUpdate = true;
 
 			material = new THREE.MeshBasicMaterial({
@@ -57,24 +59,31 @@ APP.WindowNodeDrawer = function(width, height, style, title) {
 			});
 			material.needsUpdate = true;
 
-			mesh = new THREE.Mesh(geom, material);
+			mesh = new THREE.Mesh(geometry, material);
 
 		} else {
 
+			var g = new THREE.PlaneGeometry(gw, gh);
+
+			texture = new THREE.ImageUtils.loadTexture('assets/textures/gui/default/' + style + '/' + index + '.png');
+			texture.magFilter = THREE.NearestFilter;
+			texture.minFilter = THREE.NearestFilter;
+			texture.needsUpdate = true;
+
 			material = new THREE.MeshBasicMaterial({
 				//color: 0x0000ff,
-
+				transparent: true,
 				//alphaTest: 1.0,
 				//opacity: 0.8,
 				//depthWrite: false,
 				map: texture
 			});
-			material.transparent = true;
-			material.blending = THREE.CustomBlending;
-			material.blendSrc = THREE.SrcAlphaFactor;
-			material.blendDst = THREE.SrcColorFactor;
-			material.blendEquation = THREE.AddEquation;
-			material.needsUpdate = true;
+			//material.transparent = true;
+			//material.blending = THREE.CustomBlending;
+			//material.blendSrc = THREE.SrcAlphaFactor;
+			//material.blendDst = THREE.SrcColorFactor;
+			//material.blendEquation = THREE.AddEquation;
+			//material.needsUpdate = true;
 			//material.depthWrite = false;
 			//material.alpha = true;
 
@@ -88,21 +97,27 @@ APP.WindowNodeDrawer = function(width, height, style, title) {
 				transparent: true
 			}));
 
-			console.log(material);
-			console.log("making mesh");
+			//console.log(material);
+			//console.log("making mesh");
 			//var geo1 = new THREE.PlaneGeometry( 100, 100 );
-			//mesh = THREE.SceneUtils.createMultiMaterialObject(geom, materials);
+			mesh = THREE.SceneUtils.createMultiMaterialObject(g, materials);
 			//var g2 = new THREE.CubeGeometry(2, 2, 0);
-			mesh = new THREE.Mesh(geom, material);
+			//mesh = new THREE.Mesh(geom, material);
 		}
+		//mesh.scale.set(scale, 1, scale);
+		//console.log("setting mesh pos");
+		//mesh.position.set(0, 0, 0);
+		//mesh.doubleSided = true;
 
-		console.log("setting mesh pos");
-		mesh.position.set(0, 10, 0);
+		mesh.position.set(mx, my, mz);
+		//mesh.scale.z=-1;
+		//mesh.scale.y = -1;
 		//mesh.position.x = 0;
 		//mesh.position.y = 10;
 		//mesh.position.z = 0;
 		mesh.matrixAutoUpdate = false;
 		mesh.updateMatrix();
+		//mesh.needsUpdate = true;
 
 		console.log(mesh);
 		//return mesh;
@@ -114,6 +129,7 @@ APP.WindowNodeDrawer = function(width, height, style, title) {
 
 	}
 
+	//obj.scale.set(9999999, 2, 9999999);
 	return obj;
 };
 

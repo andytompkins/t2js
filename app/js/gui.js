@@ -2,10 +2,10 @@ APP.Gui = function() {
 
 	this.background = function(callback) {
 		var texture = THREE.ImageUtils.loadTexture("assets/textures/gui/loadingbackground.png");
-		//texture.magFilter = new THREE.NearestFilter();
-		//texture.minFilter = new THREE.NearestFilter();
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 
-		var mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 0), new THREE.MeshBasicMaterial({
+		var mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({
 			map: texture
 		}));
 		mesh.material.depthTest = false;
@@ -13,6 +13,7 @@ APP.Gui = function() {
 
 		var scene = new THREE.Scene();
 		var camera = new THREE.Camera();
+		//camera.position.z = 40;
 		scene.add(camera);
 		scene.add(mesh);
 
